@@ -1,3 +1,11 @@
+/**
+ * Author: Andrey Varakin
+ * Project Description: A final project for CMSI 385 (Intro to Theory of Computation).
+ * This project models an Nondeterministic Finite Automaton (NFA), and can act as
+ * a simulator. All one needs to set up an NFA is to have a start state, description of
+ * the transitions between states, and one or more accept states.
+ */
+
 type State = string;
 type InputSymbol = string;
 
