@@ -130,6 +130,26 @@ const NFSMTests: {
       acceptStates: ['C', 'D'],
     },
   },
+  emptySet: {
+    accepted: [],
+    rejected: ['', '1', '0'],
+    description: {
+      transitions: {
+        S: {
+          0: [],
+          1: [],
+          lambda: [],
+        },
+        A: {
+          0: [],
+          1: [],
+          lambda: [],
+        },
+      },
+      start: 'S',
+      acceptStates: ['A'],
+    },
+  },
 };
 
 for (const [name, testDesc] of Object.entries(NFSMTests)) {

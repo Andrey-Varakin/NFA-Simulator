@@ -14,22 +14,38 @@ export interface NFADescription {
 }
 
 export default class NFSM {
-  private description: NFADescription;
+  private NFAdescription: NFADescription;
 
-  constructor(description: NFADescription) {
-    this.description = description;
+  /**
+   * Constructor for the NFA
+   * @param  {NFADescription} NFAdescription A description of the NFA
+   */
+  constructor(NFAdescription: NFADescription) {
+    this.NFAdescription = NFAdescription;
   }
 
+  /**
+   * Transition from one state of an NFA to another.
+   * @param  {State} state The current state you are at.
+   * @param  {InputSymbol} symbol The symbol to transition with.
+   * @return {State[]}     A State array of all states that can be reached w/ the symbol.
+   */
   transition(state: State, symbol: InputSymbol): State[] {
     const {
-      description: { transitions },
+      NFAdescription: { transitions },
     } = this;
     return transitions[state][symbol];
   }
 
+  /**
+   * Tells whether a string will be accepted by the NFA.
+   * @param  {string} inputString The string to test.
+   * @return {boolean}            Returns true if the string is accepted,
+   *                              false otherwise.
+   */
   accept(inputString: string): boolean {
     const {
-      description: { start, acceptStates },
+      NFAdescription: { start, acceptStates },
     } = this;
     const state = start;
     const stateQueue = [state];
