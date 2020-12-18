@@ -2,33 +2,13 @@ import test from 'ava';
 
 import NFSM, { NFADescription } from './NFSM';
 
-const NFSMTests: {
+const NFASimulatorTests: {
   [name: string]: {
     description: NFADescription;
     accepted: string[];
     rejected: string[];
   };
 } = {
-  startsWith0: {
-    accepted: ['0', '01', '0000', '011111'],
-    rejected: ['', '10', '101', '1100', '1011111'],
-    description: {
-      transitions: {
-        S: {
-          0: ['A'],
-          1: [],
-          lambda: [],
-        },
-        A: {
-          0: ['A'],
-          1: ['A'],
-          lambda: [],
-        },
-      },
-      start: 'S',
-      acceptStates: ['A'],
-    },
-  },
   startsWith0OrEndsWith1: {
     accepted: ['0', '11', '0000', '011111'],
     rejected: ['', '10', '100', '1100', '1011110'],
@@ -130,29 +110,108 @@ const NFSMTests: {
       acceptStates: ['C', 'D'],
     },
   },
-  emptySet: {
-    accepted: [],
-    rejected: ['', '1', '0'],
+};
+
+const NFAtoDFATests: {
+  [name: string]: {
+    description: NFADescription;
+  };
+} = {
+  lambdaTest: {
     description: {
       transitions: {
-        S: {
+        1: {
+          0: ['2'],
+          1: [],
+          lambda: ['3'],
+        },
+        2: {
           0: [],
+          1: ['2', '4'],
+          lambda: [],
+        },
+        3: {
+          0: ['4'],
+          1: [],
+          lambda: ['2'],
+        },
+        4: {
+          0: ['3'],
           1: [],
           lambda: [],
         },
+      },
+      start: '1',
+      acceptStates: ['3', '4'],
+    },
+  },
+  startsWith0: {
+    description: {
+      transitions: {
         A: {
+          0: ['B'],
+          1: [],
+          lambda: [],
+        },
+        B: {
+          0: ['B'],
+          1: ['B'],
+          lambda: [],
+        },
+      },
+      start: 'A',
+      acceptStates: ['B'],
+    },
+  },
+  endsWith01: {
+    description: {
+      transitions: {
+        A: {
+          0: ['A', 'B'],
+          1: ['A'],
+          lambda: [],
+        },
+        B: {
+          0: [],
+          1: ['C'],
+          lambda: [],
+        },
+        C: {
           0: [],
           1: [],
           lambda: [],
         },
       },
-      start: 'S',
-      acceptStates: ['A'],
+      start: 'A',
+      acceptStates: ['C'],
+    },
+  },
+  secondToLastIs1: {
+    description: {
+      transitions: {
+        A: {
+          0: ['A'],
+          1: ['A', 'B'],
+          lambda: [],
+        },
+        B: {
+          0: ['C'],
+          1: ['C'],
+          lambda: [],
+        },
+        C: {
+          0: [],
+          1: [],
+          lambda: [],
+        },
+      },
+      start: 'A',
+      acceptStates: ['C'],
     },
   },
 };
 
-for (const [name, testDesc] of Object.entries(NFSMTests)) {
+for (const [name, testDesc] of Object.entries(NFASimulatorTests)) {
   test(`${name}/constructor`, (t) => {
     const nfa = new NFSM(testDesc.description);
     return t.truthy(nfa);
@@ -180,5 +239,14 @@ for (const [name, testDesc] of Object.entries(NFSMTests)) {
     for (const s of rejected) {
       t.assert(!nfa.accept(s));
     }
+  });
+}
+
+for (const [name, testDesc] of Object.entries(NFAtoDFATests)) {
+  test(`${name}/convert`, (t) => {
+    const nfa = new NFSM(testDesc.description);
+    t.assert(nfa.convertNFAtoDFA(testDesc.description));
+    console.log('\nTesting: ' + name + '\n\n' + 'Resulting DFA Description:');
+    console.log(nfa.convertNFAtoDFA(testDesc.description));
   });
 }
